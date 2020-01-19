@@ -1,3 +1,6 @@
+# SWIFT Shirt Frontend
+The web application frontend for the SWIFT Shirt Capstone project by Brett Adcock, Frank Ali, Connor Lade, Avery Peterson, Luke Saville, and Patrick Walsh.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
