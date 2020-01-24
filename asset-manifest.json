@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/swiftshirt-frontend/static/css/main.a1f7d441.chunk.css",
+    "main.js": "/swiftshirt-frontend/static/js/main.9295a1bd.chunk.js",
+    "main.js.map": "/swiftshirt-frontend/static/js/main.9295a1bd.chunk.js.map",
+    "runtime-main.js": "/swiftshirt-frontend/static/js/runtime-main.286b538a.js",
+    "runtime-main.js.map": "/swiftshirt-frontend/static/js/runtime-main.286b538a.js.map",
+    "static/js/2.f254f828.chunk.js": "/swiftshirt-frontend/static/js/2.f254f828.chunk.js",
+    "static/js/2.f254f828.chunk.js.map": "/swiftshirt-frontend/static/js/2.f254f828.chunk.js.map",
+    "index.html": "/swiftshirt-frontend/index.html",
+    "precache-manifest.28f7207d4523a7611d0b83a671b5ab49.js": "/swiftshirt-frontend/precache-manifest.28f7207d4523a7611d0b83a671b5ab49.js",
+    "service-worker.js": "/swiftshirt-frontend/service-worker.js",
+    "static/css/main.a1f7d441.chunk.css.map": "/swiftshirt-frontend/static/css/main.a1f7d441.chunk.css.map",
+    "static/js/2.f254f828.chunk.js.LICENSE": "/swiftshirt-frontend/static/js/2.f254f828.chunk.js.LICENSE"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.286b538a.js",
+    "static/js/2.f254f828.chunk.js",
+    "static/css/main.a1f7d441.chunk.css",
+    "static/js/main.9295a1bd.chunk.js"
+  ]
+}
