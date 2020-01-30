@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap';
+
+import React from 'react';
+
+// import api from './api';
+
+// import jQuery from 'jquery';
+
+// window.jQuery = window.$ = jQuery;
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	// api.get_workout();
+	//   .then((resp) => {
+	// 	console.log(resp);
+	// });
+
+	return (
+		<div className="App">
+			<header className="App-header">
+				<p>SWIFT Shirt Frontend</p>
+			</header>
+		</div>
+	);
 }
 
 export default App;
