@@ -7,6 +7,12 @@ const Image = styled.img`
 	max-width: 100%;
 	max-height: 100%;
 	background-image: url(${logo});
+	user-drag: none;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 `;
 
 const ImageContainer = styled.div`
