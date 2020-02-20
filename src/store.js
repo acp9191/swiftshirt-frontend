@@ -11,9 +11,18 @@ function workouts(state = [], action) {
 	}
 }
 
-function workout(state = [], action) {
+function workoutData(state = [], action) {
 	switch (action.type) {
-		case 'NEW_WORKOUT':
+		case 'NEW_WORKOUT_DATA':
+			return action.data;
+		default:
+			return state;
+	}
+}
+
+function muscle(state = null, action) {
+	switch (action.type) {
+		case 'NEW_MUSCLE':
 			return action.data;
 		default:
 			return state;
@@ -23,7 +32,8 @@ function workout(state = [], action) {
 function root_reducer(state0, action) {
 	let reducer = combineReducers({
 		workouts,
-		workout
+		workoutData,
+		muscle
 	});
 
 	let state1 = reducer(state0, action);
