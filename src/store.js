@@ -29,11 +29,21 @@ function muscle(state = null, action) {
 	}
 }
 
+function loading(state = false, action) {
+	switch (action.type) {
+		case 'NEW_LOADING':
+			return action.data;
+		default:
+			return state;
+	}
+}
+
 function root_reducer(state0, action) {
 	let reducer = combineReducers({
 		workouts,
 		workoutData,
-		muscle
+		muscle,
+		loading
 	});
 
 	let state1 = reducer(state0, action);

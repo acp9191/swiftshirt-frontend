@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import store from './store';
 import styled from 'styled-components';
 
 const BodyContainer = styled.div`margin-top: 135px;`;
@@ -26,6 +27,15 @@ const CardText = styled.div`margin: auto;`;
 function Home(props) {
 	let { workouts } = props;
 
+	store.dispatch({
+		type: 'NEW_WORKOUT_DATA',
+		data: []
+	});
+	store.dispatch({
+		type: 'NEW_MUSCLE',
+		data: null
+	});
+
 	let workoutCards = [];
 
 	for (let i = 0; i <= workouts.length - 1; i++) {
@@ -49,7 +59,15 @@ function Home(props) {
 
 		workoutCards.push(
 			<div key={i} className="col-md-4">
-				<Link to={`/workout/${workout.id}`}>
+				<Link
+					to={`/workout/${workout.id}`}
+					onClick={() => {
+						store.dispatch({
+							type: 'NEW_LOADING',
+							data: true
+						});
+					}}
+				>
 					<Card className="card mb-4">
 						<CardText>
 							<div>Workout: {workout.id}</div>

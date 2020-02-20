@@ -22,14 +22,16 @@ class Server {
 			dataType: 'json',
 			contentType: 'application/json; charset=UTF-8',
 			success: (resp) => {
-				store.dispatch({
-					type: 'NEW_WORKOUT_DATA',
-					data: resp.items
-				});
-				store.dispatch({
-					type: 'NEW_MUSCLE',
-					data: resp.items[0].name
-				});
+				if (resp.items.length) {
+					store.dispatch({
+						type: 'NEW_WORKOUT_DATA',
+						data: resp.items
+					});
+					store.dispatch({
+						type: 'NEW_MUSCLE',
+						data: resp.items[0].name
+					});
+				}
 			}
 		});
 	}
