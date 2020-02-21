@@ -17,7 +17,7 @@ class Server {
 	}
 
 	get_workout(id) {
-		return jQuery.ajax(`http://api.swiftshirt.io/api/v1/workouts/${id}/raw?offset=1&limit=500`, {
+		return jQuery.ajax(`https://api.swiftshirt.io/api/v1/workouts/${id}/raw?offset=1&limit=500`, {
 			method: 'get',
 			dataType: 'json',
 			contentType: 'application/json; charset=UTF-8',

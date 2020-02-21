@@ -24,8 +24,26 @@ const Card = styled.div`
 
 const CardText = styled.div`margin: auto;`;
 
+function compare(a, b) {
+	const endA = a.end;
+	const endB = b.end;
+
+	let comparison = 0;
+	if (endA < endB) {
+		comparison = 1;
+	} else if (endA > endB) {
+		comparison = -1;
+	}
+	return comparison;
+}
+
 function Home(props) {
-	let { workouts } = props;
+	let deepClone = JSON.parse(JSON.stringify(props));
+	deepClone.defaultForm = true;
+
+	let workouts = deepClone.workouts;
+
+	workouts.sort(compare);
 
 	store.dispatch({
 		type: 'NEW_WORKOUT_DATA',
