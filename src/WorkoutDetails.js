@@ -51,23 +51,14 @@ class WorkoutDetails extends React.Component {
 		super(props);
 		let id = parseInt(props.match.params.id);
 
-		let workout = props.workouts.find((workout) => workout.id === id);
-
-		if (workout) {
-			store.dispatch({
-				type: 'NEW_WORKOUT',
-				data: workout
-			});
-		} else {
-			api.get_workouts();
-		}
-
 		this.selectMuscle = this.selectMuscle.bind(this);
 
 		api.get_workout(id).then(() => {
-			store.dispatch({
-				type: 'NEW_LOADING',
-				data: false
+			api.get_raw_workout(id).then(() => {
+				store.dispatch({
+					type: 'NEW_LOADING',
+					data: false
+				});
 			});
 		});
 	}
@@ -210,9 +201,7 @@ class WorkoutDetails extends React.Component {
 
 		let selectedWorkout = this.props.workout;
 
-		return this.props.loading ? (
-			<Loader />
-		) : (
+		return !this.props.loading && this.props.workout ? (
 			<div>
 				<TitleContainer>Workout #{selectedWorkout.id}</TitleContainer>
 				<div>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</div>
@@ -225,6 +214,8 @@ class WorkoutDetails extends React.Component {
 				</div>
 				<DiagramContainer />
 			</div>
+		) : (
+			<Loader />
 		);
 	}
 }
@@ -234,8 +225,7 @@ function state2props(state) {
 		workoutData: state.workoutData,
 		muscle: state.muscle,
 		loading: state.loading,
-		workout: state.workout,
-		workouts: state.workouts
+		workout: state.workout
 	};
 }
 

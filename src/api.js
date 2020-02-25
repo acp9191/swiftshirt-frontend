@@ -17,6 +17,20 @@ class Server {
 	}
 
 	get_workout(id) {
+		return jQuery.ajax(`https://api.swiftshirt.io/api/v1/workouts/${id}?offset=1&limit=10000`, {
+			method: 'get',
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			success: (resp) => {
+				store.dispatch({
+					type: 'NEW_WORKOUT',
+					data: resp
+				});
+			}
+		});
+	}
+
+	get_raw_workout(id) {
 		return jQuery.ajax(`https://api.swiftshirt.io/api/v1/workouts/${id}/raw?offset=1&limit=10000`, {
 			method: 'get',
 			dataType: 'json',

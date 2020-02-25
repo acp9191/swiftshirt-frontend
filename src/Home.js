@@ -110,8 +110,11 @@ function Home(props) {
 		);
 	}
 
+	const totalWorkouts = workouts.length ? <div> Total Workouts: {workouts.length}</div> : <span />;
+
 	return (
 		<BodyContainer>
+			{totalWorkouts}
 			<WorkoutContainer className="container">
 				<div className="row">{workoutCards}</div>
 			</WorkoutContainer>
