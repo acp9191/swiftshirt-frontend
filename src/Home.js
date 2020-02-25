@@ -53,6 +53,10 @@ function Home(props) {
 		type: 'NEW_MUSCLE',
 		data: null
 	});
+	store.dispatch({
+		type: 'NEW_WORKOUT',
+		data: null
+	});
 
 	let workoutCards = [];
 
@@ -60,7 +64,7 @@ function Home(props) {
 		const workout = workouts[i];
 
 		let hours = moment(workout.end, 'X').diff(moment(workout.start, 'X'), 'hours');
-		let minutes = moment(workout.end, 'X').diff(moment(workout.start, 'X'), 'minutes');
+		let minutes = moment(workout.end, 'X').diff(moment(workout.start, 'X'), 'minutes') % 60;
 		let seconds = moment(workout.end, 'X').diff(moment(workout.start, 'X'), 'seconds') % 60;
 
 		let duration = '';
@@ -84,6 +88,11 @@ function Home(props) {
 							type: 'NEW_LOADING',
 							data: true
 						});
+
+						store.dispatch({
+							type: 'NEW_WORKOUT',
+							data: workout
+						});
 					}}
 				>
 					<Card className="card mb-4">
@@ -91,7 +100,7 @@ function Home(props) {
 							<div>Workout: {workout.id}</div>
 							<div>{moment(workout.start, 'X').format('dddd, MMMM Do YYYY')}</div>
 							<div>
-								{moment(workout.start, 'X').format('h:mm:ss a')}-{moment(workout.end, 'X').format('h:mm:ss a')}
+								{moment(workout.start, 'X').format('h:mm a')}-{moment(workout.end, 'X').format('h:mm a')}
 							</div>
 							<div>Duration: {duration}</div>
 						</CardText>

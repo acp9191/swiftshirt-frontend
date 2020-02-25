@@ -3,10 +3,13 @@ import * as d3 from 'd3';
 import React from 'react';
 import api from './api';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import store from './store';
 import styled from 'styled-components';
 
-const ChartContainer = styled.div`margin-top: 135px;`;
+const TitleContainer = styled.div`margin-top: 135px;`;
+
+const DiagramContainer = styled.div`height: 300px;`;
 
 const Loader = styled.div`
 	position: absolute;
@@ -46,7 +49,18 @@ const Loader = styled.div`
 class WorkoutDetails extends React.Component {
 	constructor(props) {
 		super(props);
-		let id = props.match.params.id;
+		let id = parseInt(props.match.params.id);
+
+		let workout = props.workouts.find((workout) => workout.id === id);
+
+		if (workout) {
+			store.dispatch({
+				type: 'NEW_WORKOUT',
+				data: workout
+			});
+		} else {
+			api.get_workouts();
+		}
 
 		this.selectMuscle = this.selectMuscle.bind(this);
 
@@ -194,21 +208,35 @@ class WorkoutDetails extends React.Component {
 
 		buttons = buttons.length ? buttons : <div>No Data!</div>;
 
+		let selectedWorkout = this.props.workout;
+
 		return this.props.loading ? (
 			<Loader />
 		) : (
 			<div>
-				<ChartContainer active={active} className="chart-container" />
+				<TitleContainer>Workout #{selectedWorkout.id}</TitleContainer>
+				<div>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</div>
+				<div>
+					{moment(selectedWorkout.start, 'X').format('h:mm a')}-{moment(selectedWorkout.end, 'X').format('h:mm a')}
+				</div>
+				<div active={active} className="chart-container" />
 				<div className="btn-group btn-group-toggle" data-toggle="buttons">
 					{buttons}
 				</div>
+				<DiagramContainer />
 			</div>
 		);
 	}
 }
 
 function state2props(state) {
-	return { workoutData: state.workoutData, muscle: state.muscle, loading: state.loading };
+	return {
+		workoutData: state.workoutData,
+		muscle: state.muscle,
+		loading: state.loading,
+		workout: state.workout,
+		workouts: state.workouts
+	};
 }
 
 export default connect(state2props)(WorkoutDetails);
