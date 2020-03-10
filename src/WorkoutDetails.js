@@ -72,13 +72,17 @@ class WorkoutDetails extends React.Component {
 
 	drawChart(subset) {
 		if (subset) {
+			subset.sort(function(x, y) {
+				return x.id - y.id;
+			});
+
 			subset.forEach(function(d) {
 				d.created_at = new Date(d.created_at * 1000);
 			});
 
 			let margin = { top: 20, right: 60, bottom: 60, left: 60 },
-				width = 460 - margin.left - margin.right,
-				height = 400 - margin.top - margin.bottom;
+				width = 560 - margin.left - margin.right,
+				height = 500 - margin.top - margin.bottom;
 
 			let svg = d3
 				.select('.chart-container')
@@ -138,7 +142,7 @@ class WorkoutDetails extends React.Component {
 					'd',
 					d3
 						.line()
-						.curve(d3.curveBundle)
+						// .curve(d3.curveBasis)
 						.x(function(d) {
 							return x(d.created_at);
 						})

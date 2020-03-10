@@ -47,6 +47,17 @@ function loading(state = false, action) {
 	}
 }
 
+function session(state = null, action) {
+	switch (action.type) {
+		case 'NEW_SESSION':
+			return action.data;
+		case 'LOGOUT_SESSION':
+			return null;
+		default:
+			return state;
+	}
+}
+
 function root_reducer(state0, action) {
 	let reducer = combineReducers({
 		workouts,
