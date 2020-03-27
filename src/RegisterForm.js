@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 const FormWrapper = styled.div`
 	margin: 135px auto auto;
 	max-width: 300px;
+	text-align: left;
 `;
 
 const RegisterForm = withRouter(({ history }) => {
@@ -73,7 +74,6 @@ const RegisterForm = withRouter(({ history }) => {
 			<div className="form-group">
 				<label>Are you a Coach?</label>
 				<input type="checkbox" className="form-control" onChange={updateIsCoach} />
-				<label>I am a coach</label>
 			</div>
 			<button className="btn btn-primary" onClick={register}>
 				Register

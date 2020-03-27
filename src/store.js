@@ -64,7 +64,8 @@ function root_reducer(state0, action) {
 		workout,
 		workoutData,
 		muscle,
-		loading
+		loading,
+		session
 	});
 
 	let state1 = reducer(state0, action);

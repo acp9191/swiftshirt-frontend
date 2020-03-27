@@ -2,8 +2,8 @@ import jQuery from 'jquery';
 import store from './store';
 
 class Server {
-	get_workouts() {
-		return jQuery.ajax('https://api.swiftshirt.io/api/v1/workouts?offset=1&limit=100', {
+	get_workouts(user_id) {
+		return jQuery.ajax(`https://api.swiftshirt.io/api/v1/workouts?offset=1&limit=100&user_id=${user_id}`, {
 			method: 'get',
 			dataType: 'json',
 			contentType: 'application/json; charset=UTF-8',
@@ -76,7 +76,12 @@ class Server {
 				password
 			},
 			(resp) => {
-				this.setCookie('homepage-user-session', JSON.stringify(resp.data), 7);
+				this.setCookie('swiftshirt-user-session', JSON.stringify(resp), 7);
+				console.log(resp);
+				store.dispatch({
+					type: 'NEW_SESSION',
+					data: resp
+				});
 			},
 			(request, _status, _error) => {
 				if (request) {

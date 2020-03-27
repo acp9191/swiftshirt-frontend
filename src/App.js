@@ -8,13 +8,9 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import RegisterForm from './RegisterForm';
 import WorkoutDetails from './WorkoutDetails';
-import api from './api';
 import store from './store';
 
 function App() {
-	api.get_workouts().then((resp) => {
-		console.log(resp);
-	});
 	return (
 		<Provider store={store}>
 			<Router>
