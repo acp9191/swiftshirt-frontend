@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 
-// import Image1 from './musclesDiagram.svg';
-import { ReactComponent as Image1 } from './musclesDiagram.svg';
+import MusclesDiagram from './MusclesDiagram';
 import React from 'react';
 import api from './api';
 import { connect } from 'react-redux';
@@ -16,8 +15,6 @@ const ButtonGroup = styled.div`
 	display: block;
 	margin: 0 auto;
 `;
-
-const DiagramContainer = styled.div`height: 300px;`;
 
 const Loader = styled.div`
 	position: absolute;
@@ -164,7 +161,7 @@ class WorkoutDetails extends React.Component {
 	}
 
 	componentDidUpdate() {
-		d3.select('svg').remove();
+		d3.select('.chart-container svg').remove();
 		let deepClone = JSON.parse(JSON.stringify(this.props));
 		deepClone.defaultForm = true;
 
@@ -225,8 +222,8 @@ class WorkoutDetails extends React.Component {
 				<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
 					{buttons}
 				</ButtonGroup>
-				<DiagramContainer />
-				<Image1 width={50} height={50} />
+				{/* <DiagramContainer /> */}
+				<MusclesDiagram height={450} width={450} />
 			</div>
 		) : (
 			<Loader />
