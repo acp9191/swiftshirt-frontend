@@ -8,7 +8,17 @@ import moment from 'moment';
 import store from './store';
 import styled from 'styled-components';
 
+const DiagramContainer = styled.div`
+	background-color: darkgray;
+  border-radius: 25px;
+  margin: 40px auto;
+  max-width: 500px;
+`;
+
 const TitleContainer = styled.div`margin-top: 135px;`;
+
+const DiagramTitle = styled.div`font-size: 30px;
+margin-top: 20px;`;
 
 const ButtonGroup = styled.div`
 	max-width: 500px;
@@ -73,6 +83,29 @@ class WorkoutDetails extends React.Component {
 			(rv[x[key]] = rv[x[key]] || []).push(x);
 			return rv;
 		}, {});
+  }
+  
+  highlightMuscles() {
+		d3.selectAll('svg .back-left').attr('fill', 'red');
+		d3.selectAll('svg .back-right').attr('fill', 'red');
+
+		d3.selectAll('svg .tricep-left').attr('fill', 'orange');
+		d3.selectAll('svg .tricep-right').attr('fill', 'orange');
+
+		d3.selectAll('svg .ab-left').attr('fill', 'orange');
+		d3.selectAll('svg .ab-right').attr('fill', 'orange');
+
+		d3.selectAll('svg .chest-left').attr('fill', 'orange');
+		d3.selectAll('svg .chest-right').attr('fill', 'yellow');
+
+		d3.selectAll('svg .bicep-left').attr('fill', 'red');
+		d3.selectAll('svg .bicep-right').attr('fill', 'orange');
+
+		d3.selectAll('svg .forearm-left').attr('fill', 'red');
+		d3.selectAll('svg .forearm-right').attr('fill', 'red');
+
+		d3.selectAll('svg .shoulder-left').attr('fill', 'yellow');
+		d3.selectAll('svg .shoulder-right').attr('fill', 'yellow');
 	}
 
 	drawChart(subset) {
@@ -161,6 +194,7 @@ class WorkoutDetails extends React.Component {
 	}
 
 	componentDidUpdate() {
+    this.highlightMuscles();
 		d3.select('.chart-container svg').remove();
 		let deepClone = JSON.parse(JSON.stringify(this.props));
 		deepClone.defaultForm = true;
@@ -184,6 +218,8 @@ class WorkoutDetails extends React.Component {
 	}
 
 	render() {
+		this.highlightMuscles();
+
 		let workout = this.props.workoutData;
 
 		let active = this.props.muscle;
@@ -222,8 +258,10 @@ class WorkoutDetails extends React.Component {
 				<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
 					{buttons}
 				</ButtonGroup>
-				{/* <DiagramContainer /> */}
-				<MusclesDiagram height={450} width={450} />
+        <DiagramTitle>Muscle Diagram</DiagramTitle>
+				<DiagramContainer>
+					<MusclesDiagram height={450} width={450} />
+				</DiagramContainer>
 			</div>
 		) : (
 			<Loader />
