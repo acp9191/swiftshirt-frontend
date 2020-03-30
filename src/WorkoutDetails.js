@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
 
+// import Image1 from './musclesDiagram.svg';
+import { ReactComponent as Image1 } from './musclesDiagram.svg';
 import React from 'react';
 import api from './api';
 import { connect } from 'react-redux';
@@ -8,6 +10,12 @@ import store from './store';
 import styled from 'styled-components';
 
 const TitleContainer = styled.div`margin-top: 135px;`;
+
+const ButtonGroup = styled.div`
+	max-width: 500px;
+	display: block;
+	margin: 0 auto;
+`;
 
 const DiagramContainer = styled.div`height: 300px;`;
 
@@ -71,6 +79,8 @@ class WorkoutDetails extends React.Component {
 	}
 
 	drawChart(subset) {
+		console.log(subset);
+
 		if (subset) {
 			subset.sort(function(x, y) {
 				return x.id - y.id;
@@ -207,16 +217,16 @@ class WorkoutDetails extends React.Component {
 
 		return !this.props.loading && this.props.workout ? (
 			<div>
-				<TitleContainer>Workout #{selectedWorkout.id}</TitleContainer>
-				<div>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</div>
+				<TitleContainer>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</TitleContainer>
 				<div>
 					{moment(selectedWorkout.start, 'X').format('h:mm a')}-{moment(selectedWorkout.end, 'X').format('h:mm a')}
 				</div>
 				<div active={active} className="chart-container" />
-				<div className="btn-group btn-group-toggle" data-toggle="buttons">
+				<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
 					{buttons}
-				</div>
+				</ButtonGroup>
 				<DiagramContainer />
+				<Image1 width={50} height={50} />
 			</div>
 		) : (
 			<Loader />

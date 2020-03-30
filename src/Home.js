@@ -56,7 +56,6 @@ function Home(props) {
 	}
 
 	if (!workouts.length && session) {
-		console.log('here');
 		api.get_workouts(session.id).then((resp) => {
 			console.log(resp);
 		});
