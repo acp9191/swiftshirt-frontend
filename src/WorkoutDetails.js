@@ -10,15 +10,17 @@ import styled from 'styled-components';
 
 const DiagramContainer = styled.div`
 	background-color: darkgray;
-  border-radius: 25px;
-  margin: 40px auto;
-  max-width: 500px;
+	border-radius: 25px;
+	margin: 40px auto;
+	max-width: 500px;
 `;
 
 const TitleContainer = styled.div`margin-top: 135px;`;
 
-const DiagramTitle = styled.div`font-size: 30px;
-margin-top: 20px;`;
+const DiagramTitle = styled.div`
+	font-size: 30px;
+	margin-top: 20px;
+`;
 
 const ButtonGroup = styled.div`
 	max-width: 500px;
@@ -83,9 +85,9 @@ class WorkoutDetails extends React.Component {
 			(rv[x[key]] = rv[x[key]] || []).push(x);
 			return rv;
 		}, {});
-  }
-  
-  highlightMuscles() {
+	}
+
+	highlightMuscles() {
 		d3.selectAll('svg .back-left').attr('fill', 'red');
 		d3.selectAll('svg .back-right').attr('fill', 'red');
 
@@ -194,8 +196,12 @@ class WorkoutDetails extends React.Component {
 	}
 
 	componentDidUpdate() {
-    this.highlightMuscles();
 		d3.select('.chart-container svg').remove();
+		d3.select('.pie-chart-container svg').remove();
+
+		this.highlightMuscles();
+		this.drawPieChart();
+
 		let deepClone = JSON.parse(JSON.stringify(this.props));
 		deepClone.defaultForm = true;
 
@@ -215,6 +221,74 @@ class WorkoutDetails extends React.Component {
 			type: 'NEW_MUSCLE',
 			data: event.target.innerText
 		});
+	}
+
+	drawPieChart() {
+		var width = 450,
+			height = 450,
+			margin = 40;
+
+		// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+		var radius = Math.min(width, height) / 2 - margin;
+
+		// append the svg object to the div called 'my_dataviz'
+		var svg = d3
+			.select('.pie-chart-container')
+			.append('svg')
+			.attr('width', width)
+			.attr('height', height)
+			.append('g')
+			.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+
+		// Create dummy data
+		var data = { Shoulders: 15, Biceps: 20, Triceps: 10, Chest: 30, Forearms: 15, Abs: 12, Back: 15 };
+
+		// set the color scale
+		var color = d3.scaleOrdinal().domain(data).range(d3.schemeSet2);
+
+		// Compute the position of each group on the pie:
+		var pie = d3.pie().value(function(d) {
+			return d.value;
+		});
+		var data_ready = pie(d3.entries(data));
+
+		console.log(data_ready);
+
+		// Now I know that group A goes from 0 degrees to x degrees and so on.
+
+		// shape helper to build arcs:
+		var arcGenerator = d3.arc().innerRadius(100).outerRadius(radius);
+
+		// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+		svg
+			.selectAll('mySlices')
+			.data(data_ready)
+			.enter()
+			.append('path')
+			.attr('d', arcGenerator)
+			.attr('fill', function(d) {
+				return color(d.data.key);
+			})
+			.attr('stroke', 'black')
+			.style('stroke-width', '2px')
+			.style('opacity', 0.7);
+
+		// Now add the annotation. Use the centroid method to get the best coordinates
+		svg
+			.selectAll('mySlices')
+			.data(data_ready)
+			.enter()
+			.append('text')
+			.text(function(d) {
+				console.log(d);
+				let percentage = (d.endAngle - d.startAngle) / (2 * Math.PI) * 100;
+				return `${d.data.key}: ${percentage.toFixed(2)}%`;
+			})
+			.attr('transform', function(d) {
+				return 'translate(' + arcGenerator.centroid(d) + ')';
+			})
+			.style('text-anchor', 'middle')
+			.style('font-size', 17);
 	}
 
 	render() {
@@ -258,10 +332,12 @@ class WorkoutDetails extends React.Component {
 				<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
 					{buttons}
 				</ButtonGroup>
-        <DiagramTitle>Muscle Diagram</DiagramTitle>
+				<DiagramTitle>Muscle Diagram</DiagramTitle>
 				<DiagramContainer>
 					<MusclesDiagram height={450} width={450} />
 				</DiagramContainer>
+				<DiagramTitle>Strain Distribution</DiagramTitle>
+				<div className="pie-chart-container" />
 			</div>
 		) : (
 			<Loader />
