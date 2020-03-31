@@ -23,3 +23,8 @@
 a:hover {
 	text-decoration: none;
 }
+
+.balance-title {
+	font-weight: bold;
+	font-size: 25px;
+}

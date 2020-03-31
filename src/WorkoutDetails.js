@@ -17,6 +17,11 @@ const DiagramContainer = styled.div`
 
 const TitleContainer = styled.div`margin-top: 135px;`;
 
+const LeftRightBalance = styled.div`
+	margin-bottom: 100px;
+	margin-top: 15px;
+`;
+
 const DiagramTitle = styled.div`
 	font-size: 30px;
 	margin-top: 20px;
@@ -252,8 +257,6 @@ class WorkoutDetails extends React.Component {
 		});
 		var data_ready = pie(d3.entries(data));
 
-		console.log(data_ready);
-
 		// Now I know that group A goes from 0 degrees to x degrees and so on.
 
 		// shape helper to build arcs:
@@ -269,7 +272,6 @@ class WorkoutDetails extends React.Component {
 			.attr('fill', function(d) {
 				return color(d.data.key);
 			})
-			.attr('stroke', 'black')
 			.style('stroke-width', '2px')
 			.style('opacity', 0.7);
 
@@ -280,7 +282,6 @@ class WorkoutDetails extends React.Component {
 			.enter()
 			.append('text')
 			.text(function(d) {
-				console.log(d);
 				let percentage = (d.endAngle - d.startAngle) / (2 * Math.PI) * 100;
 				return `${d.data.key}: ${percentage.toFixed(2)}%`;
 			})
@@ -332,12 +333,29 @@ class WorkoutDetails extends React.Component {
 				<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
 					{buttons}
 				</ButtonGroup>
-				<DiagramTitle>Muscle Diagram</DiagramTitle>
+				<DiagramTitle>Muscle Activation</DiagramTitle>
 				<DiagramContainer>
 					<MusclesDiagram height={450} width={450} />
 				</DiagramContainer>
 				<DiagramTitle>Strain Distribution</DiagramTitle>
 				<div className="pie-chart-container" />
+				<DiagramTitle>Left/Right Balance</DiagramTitle>
+				<LeftRightBalance>
+					<div className="balance-title">Shoulders</div>
+					<div>57% Right</div>
+					<div className="balance-title">Back</div>
+					<div>70% Right</div>
+					<div className="balance-title">Chest</div>
+					<div>60% Right</div>
+					<div className="balance-title">Biceps</div>
+					<div>Perfectly Even!</div>
+					<div className="balance-title">Triceps</div>
+					<div>57% Left</div>
+					<div className="balance-title">Forearms</div>
+					<div>55% Right</div>
+					<div className="balance-title">Abs</div>
+					<div>Perfectly Even!</div>
+				</LeftRightBalance>
 			</div>
 		) : (
 			<Loader />
