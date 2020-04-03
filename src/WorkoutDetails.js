@@ -324,7 +324,7 @@ class WorkoutDetails extends React.Component {
 			.append('g')
 			.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
-		var data = {
+		let data = {
 			Shoulders: repCountData.left_shoulder + repCountData.right_shoulder,
 			Biceps: repCountData.left_bicep + repCountData.right_bicep,
 			Triceps: repCountData.left_tricep + repCountData.right_tricep,
@@ -333,6 +333,12 @@ class WorkoutDetails extends React.Component {
 			Abs: repCountData.left_ab + repCountData.right_ab,
 			Back: repCountData.left_back + repCountData.right_back
 		};
+
+		for (let key in data) {
+			if (data[key] === 0) {
+				delete data[key];
+			}
+		}
 
 		// set the color scale
 		var color = d3.scaleOrdinal().domain(data).range(d3.schemeSet2);
