@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import store from './store';
 import styled from 'styled-components';
+import { withCookies } from 'react-cookie';
 
 const DiagramContainer = styled.div`
 	background-color: darkgray;
@@ -18,8 +19,8 @@ const DiagramContainer = styled.div`
 const TitleContainer = styled.div`margin-top: 135px;`;
 
 const LeftRightBalance = styled.div`
-	margin-bottom: 100px;
-	margin-top: 15px;
+	margin: 15px auto 100px;
+	max-width: 500px;
 `;
 
 const DiagramTitle = styled.div`
@@ -31,6 +32,20 @@ const ButtonGroup = styled.div`
 	max-width: 500px;
 	display: block;
 	margin: 0 auto;
+`;
+
+const LRContainer = styled.div`
+	height: 55px;
+	font-size: 20px;
+`;
+
+const Left = styled.span`
+	float: left;
+	margin-left: 45px;
+`;
+const Right = styled.span`
+	float: right;
+	margin-right: 45px;
 `;
 
 const Loader = styled.div`
@@ -68,6 +83,40 @@ const Loader = styled.div`
 	}
 `;
 
+const keyValueMap = {
+	right_bicep: 'Right Bicep',
+	left_bicep: 'Left Bicep',
+	right_ab: 'Right Ab',
+	left_ab: 'Left Ab',
+	right_back: 'Right Back',
+	left_back: 'Left Back',
+	right_shoulder: 'Right Shoulder',
+	left_shoulder: 'Left Shoulder',
+	right_tricep: 'Right Tricep',
+	left_tricep: 'Left Tricep',
+	right_chest: 'Right Chest',
+	left_chest: 'Left Chest',
+	right_forearm: 'Right Forearm',
+	left_forearm: 'Left Forearm'
+};
+
+const classKeyValueMap = {
+	right_bicep: 'bicep-right',
+	left_bicep: 'bicep-left',
+	right_ab: 'ab-right',
+	left_ab: 'ab-left',
+	right_back: 'back-right',
+	left_back: 'back-left',
+	right_shoulder: 'shoulder-right',
+	left_shoulder: 'shoulder-left',
+	right_tricep: 'tricep-right',
+	left_tricep: 'tricep-left',
+	right_chest: 'chest-right',
+	left_chest: 'chest-left',
+	right_forearm: 'forearm-right',
+	left_forearm: 'forearm-left'
+};
+
 class WorkoutDetails extends React.Component {
 	constructor(props) {
 		super(props);
@@ -75,7 +124,23 @@ class WorkoutDetails extends React.Component {
 
 		this.selectMuscle = this.selectMuscle.bind(this);
 
-		api.get_workout(id).then(() => {
+		if (!props.workouts) {
+			let sessionObj = props.cookies.get('swiftshirt-user-session') || null;
+
+			api.get_workouts(sessionObj.id).then((workouts) => {
+				let workout = workouts.items.find((x) => x.id === id);
+				store.dispatch({
+					type: 'NEW_WORKOUT',
+					data: workout
+				});
+				store.dispatch({
+					type: 'NEW_LOADING',
+					data: false
+				});
+			});
+		}
+
+		api.get_rep_counts(id).then(() => {
 			api.get_raw_workout(id).then(() => {
 				store.dispatch({
 					type: 'NEW_LOADING',
@@ -92,32 +157,40 @@ class WorkoutDetails extends React.Component {
 		}, {});
 	}
 
-	highlightMuscles() {
-		d3.selectAll('svg .back-left').attr('fill', 'red');
-		d3.selectAll('svg .back-right').attr('fill', 'red');
+	highlightMuscles(repCountData) {
+		delete repCountData.avg_hrt;
+		delete repCountData.name;
+		delete repCountData.id;
 
-		d3.selectAll('svg .tricep-left').attr('fill', 'orange');
-		d3.selectAll('svg .tricep-right').attr('fill', 'orange');
+		let i = 0;
+		let total = 0;
 
-		d3.selectAll('svg .ab-left').attr('fill', 'orange');
-		d3.selectAll('svg .ab-right').attr('fill', 'orange');
+		for (let key in repCountData) {
+			total += repCountData[key];
+			i++;
+		}
 
-		d3.selectAll('svg .chest-left').attr('fill', 'orange');
-		d3.selectAll('svg .chest-right').attr('fill', 'yellow');
+		let average = total / i;
 
-		d3.selectAll('svg .bicep-left').attr('fill', 'red');
-		d3.selectAll('svg .bicep-right').attr('fill', 'orange');
+		console.log(repCountData);
+		console.log(average);
 
-		d3.selectAll('svg .forearm-left').attr('fill', 'red');
-		d3.selectAll('svg .forearm-right').attr('fill', 'red');
+		let low = 'yellow';
+		let medium = 'orange';
+		let high = 'red';
 
-		d3.selectAll('svg .shoulder-left').attr('fill', 'yellow');
-		d3.selectAll('svg .shoulder-right').attr('fill', 'yellow');
+		for (let key in repCountData) {
+			if (repCountData[key] >= average * 1.05) {
+				d3.selectAll(`svg .${classKeyValueMap[key]}`).attr('fill', high);
+			} else if (repCountData[key] <= average * 0.95) {
+				d3.selectAll(`svg .${classKeyValueMap[key]}`).attr('fill', low);
+			} else {
+				d3.selectAll(`svg .${classKeyValueMap[key]}`).attr('fill', medium);
+			}
+		}
 	}
 
 	drawChart(subset) {
-		console.log(subset);
-
 		if (subset) {
 			subset.sort(function(x, y) {
 				return x.id - y.id;
@@ -204,9 +277,6 @@ class WorkoutDetails extends React.Component {
 		d3.select('.chart-container svg').remove();
 		d3.select('.pie-chart-container svg').remove();
 
-		this.highlightMuscles();
-		this.drawPieChart();
-
 		let deepClone = JSON.parse(JSON.stringify(this.props));
 		deepClone.defaultForm = true;
 
@@ -216,19 +286,28 @@ class WorkoutDetails extends React.Component {
 
 		let grouped = this.groupBy(rawData, 'name');
 
+		if (deepClone.repCounts) {
+			this.highlightMuscles(deepClone.repCounts);
+			this.drawPieChart(deepClone.repCounts);
+		}
+
 		if (grouped && active) {
 			this.drawChart(grouped[active]);
+			store.dispatch({
+				type: 'NEW_LOADING',
+				data: false
+			});
 		}
 	}
 
 	selectMuscle(event) {
 		store.dispatch({
 			type: 'NEW_MUSCLE',
-			data: event.target.innerText
+			data: event.target.dataset.key
 		});
 	}
 
-	drawPieChart() {
+	drawPieChart(repCountData) {
 		var width = 450,
 			height = 450,
 			margin = 40;
@@ -245,8 +324,15 @@ class WorkoutDetails extends React.Component {
 			.append('g')
 			.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
-		// Create dummy data
-		var data = { Shoulders: 15, Biceps: 20, Triceps: 10, Chest: 30, Forearms: 15, Abs: 12, Back: 15 };
+		var data = {
+			Shoulders: repCountData.left_shoulder + repCountData.right_shoulder,
+			Biceps: repCountData.left_bicep + repCountData.right_bicep,
+			Triceps: repCountData.left_tricep + repCountData.right_tricep,
+			Chest: repCountData.left_chest + repCountData.right_chest,
+			Forearms: repCountData.left_forearm + repCountData.right_forearm,
+			Abs: repCountData.left_ab + repCountData.right_ab,
+			Back: repCountData.left_back + repCountData.right_back
+		};
 
 		// set the color scale
 		var color = d3.scaleOrdinal().domain(data).range(d3.schemeSet2);
@@ -293,8 +379,6 @@ class WorkoutDetails extends React.Component {
 	}
 
 	render() {
-		this.highlightMuscles();
-
 		let workout = this.props.workoutData;
 
 		let active = this.props.muscle;
@@ -306,14 +390,26 @@ class WorkoutDetails extends React.Component {
 		for (let key of Object.keys(grouped)) {
 			if (key === active) {
 				buttons.push(
-					<button key={key} type="button" className="btn btn-primary active" onClick={this.selectMuscle}>
-						{key}
+					<button
+						key={key}
+						data-key={key}
+						type="button"
+						className="btn btn-primary active"
+						onClick={this.selectMuscle}
+					>
+						{keyValueMap[key]}
 					</button>
 				);
 			} else {
 				buttons.push(
-					<button key={key} type="button" className="btn btn-primary" onClick={this.selectMuscle}>
-						{key}
+					<button
+						key={key}
+						data-key={key}
+						type="button"
+						className="btn btn-primary"
+						onClick={this.selectMuscle}
+					>
+						{keyValueMap[key]}
 					</button>
 				);
 			}
@@ -323,7 +419,9 @@ class WorkoutDetails extends React.Component {
 
 		let selectedWorkout = this.props.workout;
 
-		return !this.props.loading && this.props.workout ? (
+		let repCounts = this.props.repCounts;
+
+		return !this.props.loading && this.props.workout && this.props.repCounts ? (
 			<div>
 				<TitleContainer>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</TitleContainer>
 				<div>
@@ -336,25 +434,50 @@ class WorkoutDetails extends React.Component {
 				<DiagramTitle>Muscle Activation</DiagramTitle>
 				<DiagramContainer>
 					<MusclesDiagram height={450} width={450} />
+					<LRContainer>
+						<Left>L</Left>
+						<Right>R</Right>
+					</LRContainer>
 				</DiagramContainer>
 				<DiagramTitle>Strain Distribution</DiagramTitle>
 				<div className="pie-chart-container" />
 				<DiagramTitle>Left/Right Balance</DiagramTitle>
 				<LeftRightBalance>
 					<div className="balance-title">Shoulders</div>
-					<div>57% Right</div>
+					<LRContainer>
+						<Left>{repCounts.left_shoulder}</Left>
+						<Right>{repCounts.right_shoulder}</Right>
+					</LRContainer>
 					<div className="balance-title">Back</div>
-					<div>70% Right</div>
+					<LRContainer>
+						<Left>{repCounts.left_back}</Left>
+						<Right>{repCounts.right_back}</Right>
+					</LRContainer>
 					<div className="balance-title">Chest</div>
-					<div>60% Right</div>
+					<LRContainer>
+						<Left>{repCounts.left_chest}</Left>
+						<Right>{repCounts.right_chest}</Right>
+					</LRContainer>
 					<div className="balance-title">Biceps</div>
-					<div>Perfectly Even!</div>
+					<LRContainer>
+						<Left>{repCounts.left_bicep}</Left>
+						<Right>{repCounts.right_bicep}</Right>
+					</LRContainer>
 					<div className="balance-title">Triceps</div>
-					<div>57% Left</div>
+					<LRContainer>
+						<Left>{repCounts.left_tricep}</Left>
+						<Right>{repCounts.right_tricep}</Right>
+					</LRContainer>
 					<div className="balance-title">Forearms</div>
-					<div>55% Right</div>
+					<LRContainer>
+						<Left>{repCounts.left_forearm}</Left>
+						<Right>{repCounts.right_forearm}</Right>
+					</LRContainer>
 					<div className="balance-title">Abs</div>
-					<div>Perfectly Even!</div>
+					<LRContainer>
+						<Left>{repCounts.left_ab}</Left>
+						<Right>{repCounts.right_ab}</Right>
+					</LRContainer>
 				</LeftRightBalance>
 			</div>
 		) : (
@@ -368,8 +491,10 @@ function state2props(state) {
 		workoutData: state.workoutData,
 		muscle: state.muscle,
 		loading: state.loading,
-		workout: state.workout
+		workout: state.workout,
+		repCounts: state.repCounts,
+		session: state.session
 	};
 }
 
-export default connect(state2props)(WorkoutDetails);
+export default connect(state2props)(withCookies(WorkoutDetails));

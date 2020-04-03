@@ -12,18 +12,20 @@ class Server {
 					type: 'NEW_WORKOUTS',
 					data: resp.items
 				});
+				return resp.items;
 			}
 		});
 	}
 
-	get_workout(id) {
+	get_rep_counts(id) {
 		return jQuery.ajax(`https://api.swiftshirt.io/api/v1/workouts/${id}?offset=1&limit=10000`, {
 			method: 'get',
 			dataType: 'json',
 			contentType: 'application/json; charset=UTF-8',
 			success: (resp) => {
+				console.log(resp);
 				store.dispatch({
-					type: 'NEW_WORKOUT',
+					type: 'NEW_REP_COUNTS',
 					data: resp
 				});
 			}

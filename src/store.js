@@ -58,6 +58,15 @@ function session(state = null, action) {
 	}
 }
 
+function repCounts(state = null, action) {
+	switch (action.type) {
+		case 'NEW_REP_COUNTS':
+			return action.data;
+		default:
+			return state;
+	}
+}
+
 function root_reducer(state0, action) {
 	let reducer = combineReducers({
 		workouts,
@@ -65,7 +74,8 @@ function root_reducer(state0, action) {
 		workoutData,
 		muscle,
 		loading,
-		session
+		session,
+		repCounts
 	});
 
 	let state1 = reducer(state0, action);
