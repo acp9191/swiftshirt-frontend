@@ -477,7 +477,7 @@ class WorkoutDetails extends React.Component {
 					<div className="pie-chart-container" />
 					<DiagramTitle>Left/Right Balance</DiagramTitle>
 					<LeftRightBalance>
-						{repCounts.left_shoulder && repCounts.right_shoulder ? (
+						{repCounts.left_shoulder || repCounts.right_shoulder ? (
 							<div>
 								<div className="balance-title">Shoulders</div>
 								<LRBalanceContainer>
@@ -532,7 +532,7 @@ class WorkoutDetails extends React.Component {
 						) : (
 							<div />
 						)}
-						{repCounts.left_back && repCounts.right_back ? (
+						{repCounts.left_back || repCounts.right_back ? (
 							<div>
 								<div className="balance-title">Back</div>
 								<LRBalanceContainer>
@@ -587,7 +587,7 @@ class WorkoutDetails extends React.Component {
 						) : (
 							<div />
 						)}
-						{repCounts.left_chest && repCounts.right_chest ? (
+						{repCounts.left_chest || repCounts.right_chest ? (
 							<div>
 								<div className="balance-title">Chest</div>
 								<LRBalanceContainer>
@@ -642,7 +642,7 @@ class WorkoutDetails extends React.Component {
 						) : (
 							<div />
 						)}
-						{repCounts.left_bicep && repCounts.right_bicep ? (
+						{repCounts.left_bicep || repCounts.right_bicep ? (
 							<div>
 								<div className="balance-title">Biceps</div>
 								<LRBalanceContainer>
@@ -697,7 +697,7 @@ class WorkoutDetails extends React.Component {
 						) : (
 							<div />
 						)}
-						{repCounts.left_tricep && repCounts.right_tricep ? (
+						{repCounts.left_tricep || repCounts.right_tricep ? (
 							<div>
 								<div className="balance-title">Triceps</div>
 								<LRBalanceContainer>
@@ -752,7 +752,7 @@ class WorkoutDetails extends React.Component {
 						) : (
 							<div />
 						)}
-						{repCounts.left_forearm && repCounts.right_forearm ? (
+						{repCounts.left_forearm || repCounts.right_forearm ? (
 							<div>
 								<div className="balance-title">Forearms</div>
 								<LRBalanceContainer>
@@ -807,7 +807,7 @@ class WorkoutDetails extends React.Component {
 						) : (
 							<div />
 						)}
-						{repCounts.left_ab && repCounts.right_ab ? (
+						{repCounts.left_ab || repCounts.right_ab ? (
 							<div>
 								<div className="balance-title">Abs</div>
 								<LRBalanceContainer>
