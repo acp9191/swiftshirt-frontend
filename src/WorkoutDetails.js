@@ -179,9 +179,6 @@ class WorkoutDetails extends React.Component {
 
 		let average = total / i;
 
-		console.log(repCountData);
-		console.log(average);
-
 		let low = 'yellow';
 		let medium = 'orange';
 		let high = 'red';
@@ -280,7 +277,7 @@ class WorkoutDetails extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {
+	update() {
 		d3.select('.chart-container svg').remove();
 		d3.select('.pie-chart-container svg').remove();
 
@@ -306,6 +303,10 @@ class WorkoutDetails extends React.Component {
 				data: false
 			});
 		}
+	}
+
+	componentDidUpdate() {
+		this.update();
 	}
 
 	selectMuscle(event) {
@@ -405,10 +406,12 @@ class WorkoutDetails extends React.Component {
 				return 'translate(' + arcGenerator.centroid(d) + ')';
 			})
 			.style('text-anchor', 'middle')
-			.style('font-size', 17);
+			.style('font-size', 15);
 	}
 
 	render() {
+		this.update();
+
 		let workout = this.props.workoutData;
 
 		let active = this.props.muscle;
@@ -445,356 +448,424 @@ class WorkoutDetails extends React.Component {
 			}
 		}
 
-		buttons = buttons.length ? buttons : <div>No Data!</div>;
+		buttons = buttons.length && !this.props.loading ? buttons : <div>No Data!</div>;
 
 		let selectedWorkout = this.props.workout;
 
 		let repCounts = this.props.repCounts;
 
-		return !this.props.loading && this.props.workout && this.props.repCounts ? (
-			<div>
-				<TitleContainer>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</TitleContainer>
+		let toReturn =
+			!this.props.loading && this.props.workout && this.props.repCounts ? (
 				<div>
-					{moment(selectedWorkout.start, 'X').format('h:mm a')}-{moment(selectedWorkout.end, 'X').format('h:mm a')}
+					<TitleContainer>{moment(selectedWorkout.start, 'X').format('dddd, MMMM Do YYYY')}</TitleContainer>
+					<div>
+						{moment(selectedWorkout.start, 'X').format('h:mm a')}-{moment(selectedWorkout.end, 'X').format('h:mm a')}
+					</div>
+					<div active={active} className="chart-container" />
+					<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
+						{buttons}
+					</ButtonGroup>
+					<DiagramTitle>Muscle Activation</DiagramTitle>
+					<DiagramContainer>
+						<MusclesDiagram height={450} width={450} />
+						<LRContainer>
+							<Left>L</Left>
+							<Right>R</Right>
+						</LRContainer>
+					</DiagramContainer>
+					<DiagramTitle>Strain Distribution</DiagramTitle>
+					<div className="pie-chart-container" />
+					<DiagramTitle>Left/Right Balance</DiagramTitle>
+					<LeftRightBalance>
+						{repCounts.left_shoulder && repCounts.right_shoulder ? (
+							<div>
+								<div className="balance-title">Shoulders</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_shoulder}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_shoulder /
+														(repCounts.right_shoulder ? repCounts.right_shoulder : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_shoulder === repCounts.right_shoulder ? (
+													'lawngreen'
+												) : repCounts.left_shoulder > repCounts.right_shoulder ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 *
+													(repCounts.right_shoulder /
+														(repCounts.left_shoulder ? repCounts.left_shoulder : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_shoulder === repCounts.left_shoulder ? (
+													'lawngreen'
+												) : repCounts.right_shoulder > repCounts.left_shoulder ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_shoulder}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+						{repCounts.left_back && repCounts.right_back ? (
+							<div>
+								<div className="balance-title">Back</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_back}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_back /
+														(repCounts.right_back ? repCounts.right_back : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_back === repCounts.right_back ? (
+													'lawngreen'
+												) : repCounts.left_back > repCounts.right_back ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 *
+													(repCounts.right_back /
+														(repCounts.left_back ? repCounts.left_back : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_back === repCounts.left_back ? (
+													'lawngreen'
+												) : repCounts.right_back > repCounts.left_back ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_back}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+						{repCounts.left_chest && repCounts.right_chest ? (
+							<div>
+								<div className="balance-title">Chest</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_chest}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_chest /
+														(repCounts.right_chest ? repCounts.right_chest : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_chest === repCounts.right_chest ? (
+													'lawngreen'
+												) : repCounts.left_chest > repCounts.right_chest ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 *
+													(repCounts.right_chest /
+														(repCounts.left_chest ? repCounts.left_chest : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_chest === repCounts.left_chest ? (
+													'lawngreen'
+												) : repCounts.right_chest > repCounts.left_chest ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_chest}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+						{repCounts.left_bicep && repCounts.right_bicep ? (
+							<div>
+								<div className="balance-title">Biceps</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_bicep}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_bicep /
+														(repCounts.right_bicep ? repCounts.right_bicep : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_bicep === repCounts.right_bicep ? (
+													'lawngreen'
+												) : repCounts.left_bicep > repCounts.right_bicep ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 *
+													(repCounts.right_bicep /
+														(repCounts.left_bicep ? repCounts.left_bicep : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_bicep === repCounts.left_bicep ? (
+													'lawngreen'
+												) : repCounts.right_bicep > repCounts.left_bicep ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_bicep}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+						{repCounts.left_tricep && repCounts.right_tricep ? (
+							<div>
+								<div className="balance-title">Triceps</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_tricep}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_tricep /
+														(repCounts.right_tricep ? repCounts.right_tricep : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_tricep === repCounts.right_tricep ? (
+													'lawngreen'
+												) : repCounts.left_tricep > repCounts.right_tricep ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 *
+													(repCounts.right_tricep /
+														(repCounts.left_tricep ? repCounts.left_tricep : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_tricep === repCounts.left_tricep ? (
+													'lawngreen'
+												) : repCounts.right_tricep > repCounts.left_tricep ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_tricep}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+						{repCounts.left_forearm && repCounts.right_forearm ? (
+							<div>
+								<div className="balance-title">Forearms</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_forearm}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_forearm /
+														(repCounts.right_forearm ? repCounts.right_forearm : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_forearm === repCounts.right_forearm ? (
+													'lawngreen'
+												) : repCounts.left_forearm > repCounts.right_forearm ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 *
+													(repCounts.right_forearm /
+														(repCounts.left_forearm ? repCounts.left_forearm : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_forearm === repCounts.left_forearm ? (
+													'lawngreen'
+												) : repCounts.right_forearm > repCounts.left_forearm ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_forearm}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+						{repCounts.left_ab && repCounts.right_ab ? (
+							<div>
+								<div className="balance-title">Abs</div>
+								<LRBalanceContainer>
+									<Left>{repCounts.left_ab}</Left>
+									<svg width="300" height="24">
+										<line
+											x1="149"
+											y1="12"
+											x2={
+												150 -
+												125 *
+													(repCounts.left_ab / (repCounts.right_ab ? repCounts.right_ab : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.left_ab === repCounts.right_ab ? (
+													'lawngreen'
+												) : repCounts.left_ab > repCounts.right_ab ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+										<line
+											x1="151"
+											y1="12"
+											x2={
+												150 +
+												125 * (repCounts.right_ab / (repCounts.left_ab ? repCounts.left_ab : 1))
+											}
+											y2="12"
+											stroke={
+												repCounts.right_ab === repCounts.left_ab ? (
+													'lawngreen'
+												) : repCounts.right_ab > repCounts.left_ab ? (
+													'red'
+												) : (
+													'yellow'
+												)
+											}
+											strokeWidth="5"
+										/>
+									</svg>
+									<Right>{repCounts.right_ab}</Right>
+								</LRBalanceContainer>
+							</div>
+						) : (
+							<div />
+						)}
+					</LeftRightBalance>
 				</div>
-				<div active={active} className="chart-container" />
-				<ButtonGroup className="btn-group btn-group-toggle" data-toggle="buttons">
-					{buttons}
-				</ButtonGroup>
-				<DiagramTitle>Muscle Activation</DiagramTitle>
-				<DiagramContainer>
-					<MusclesDiagram height={450} width={450} />
-					<LRContainer>
-						<Left>L</Left>
-						<Right>R</Right>
-					</LRContainer>
-				</DiagramContainer>
-				<DiagramTitle>Strain Distribution</DiagramTitle>
-				<div className="pie-chart-container" />
-				<DiagramTitle>Left/Right Balance</DiagramTitle>
-				<LeftRightBalance>
-					<div className="balance-title">Shoulders</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_shoulder}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={
-									150 -
-									125 *
-										(repCounts.left_shoulder /
-											(repCounts.right_shoulder ? repCounts.right_shoulder : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.left_shoulder === repCounts.right_shoulder ? (
-										'orange'
-									) : repCounts.left_shoulder > repCounts.right_shoulder ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={
-									150 +
-									125 *
-										(repCounts.right_shoulder /
-											(repCounts.left_shoulder ? repCounts.left_shoulder : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.right_shoulder === repCounts.left_shoulder ? (
-										'orange'
-									) : repCounts.right_shoulder > repCounts.left_shoulder ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_shoulder}</Right>
-					</LRBalanceContainer>
-					<div className="balance-title">Back</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_back}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={
-									150 -
-									125 * (repCounts.left_back / (repCounts.right_back ? repCounts.right_back : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.left_back === repCounts.right_back ? (
-										'orange'
-									) : repCounts.left_back > repCounts.right_back ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={
-									150 + 125 * (repCounts.right_back / (repCounts.left_back ? repCounts.left_back : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.right_back === repCounts.left_back ? (
-										'orange'
-									) : repCounts.right_back > repCounts.left_back ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_back}</Right>
-					</LRBalanceContainer>
-					<div className="balance-title">Chest</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_chest}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={
-									150 -
-									125 * (repCounts.left_chest / (repCounts.right_chest ? repCounts.right_chest : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.left_chest === repCounts.right_chest ? (
-										'orange'
-									) : repCounts.left_chest > repCounts.right_chest ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={
-									150 +
-									125 * (repCounts.right_chest / (repCounts.left_chest ? repCounts.left_chest : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.right_chest === repCounts.left_chest ? (
-										'orange'
-									) : repCounts.right_chest > repCounts.left_chest ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_chest}</Right>
-					</LRBalanceContainer>
-					<div className="balance-title">Biceps</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_bicep}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={
-									150 -
-									125 * (repCounts.left_bicep / (repCounts.right_bicep ? repCounts.right_bicep : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.left_bicep === repCounts.right_bicep ? (
-										'orange'
-									) : repCounts.left_bicep > repCounts.right_bicep ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={
-									150 +
-									125 * (repCounts.right_bicep / (repCounts.left_bicep ? repCounts.left_bicep : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.right_bicep === repCounts.left_bicep ? (
-										'orange'
-									) : repCounts.right_bicep > repCounts.left_bicep ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_bicep}</Right>
-					</LRBalanceContainer>
-					<div className="balance-title">Triceps</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_tricep}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={
-									150 -
-									125 *
-										(repCounts.left_tricep / (repCounts.right_tricep ? repCounts.right_tricep : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.left_tricep === repCounts.right_tricep ? (
-										'orange'
-									) : repCounts.left_tricep > repCounts.right_tricep ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={
-									150 +
-									125 * (repCounts.right_tricep / (repCounts.left_tricep ? repCounts.left_tricep : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.right_tricep === repCounts.left_tricep ? (
-										'orange'
-									) : repCounts.right_tricep > repCounts.left_tricep ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_tricep}</Right>
-					</LRBalanceContainer>
-					<div className="balance-title">Forearms</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_forearm}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={
-									150 -
-									125 *
-										(repCounts.left_forearm /
-											(repCounts.right_forearm ? repCounts.right_forearm : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.left_forearm === repCounts.right_forearm ? (
-										'orange'
-									) : repCounts.left_forearm > repCounts.right_forearm ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={
-									150 +
-									125 *
-										(repCounts.right_forearm /
-											(repCounts.left_forearm ? repCounts.left_forearm : 1))
-								}
-								y2="12"
-								stroke={
-									repCounts.right_forearm === repCounts.left_forearm ? (
-										'orange'
-									) : repCounts.right_forearm > repCounts.left_forearm ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_forearm}</Right>
-					</LRBalanceContainer>
-					<div className="balance-title">Abs</div>
-					<LRBalanceContainer>
-						<Left>{repCounts.left_ab}</Left>
-						<svg width="300" height="24">
-							<line
-								x1="149"
-								y1="12"
-								x2={150 - 125 * (repCounts.left_ab / (repCounts.right_ab ? repCounts.right_ab : 1))}
-								y2="12"
-								stroke={
-									repCounts.left_ab === repCounts.right_ab ? (
-										'orange'
-									) : repCounts.left_ab > repCounts.right_ab ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-							<line
-								x1="151"
-								y1="12"
-								x2={150 + 125 * (repCounts.right_ab / (repCounts.left_ab ? repCounts.left_ab : 1))}
-								y2="12"
-								stroke={
-									repCounts.right_ab === repCounts.left_ab ? (
-										'orange'
-									) : repCounts.right_ab > repCounts.left_ab ? (
-										'red'
-									) : (
-										'yellow'
-									)
-								}
-								stroke-width="5"
-							/>
-						</svg>
-						<Right>{repCounts.right_ab}</Right>
-					</LRBalanceContainer>
-				</LeftRightBalance>
-			</div>
-		) : (
-			<Loader />
-		);
+			) : (
+				<Loader />
+			);
+
+		return toReturn;
 	}
 }
 

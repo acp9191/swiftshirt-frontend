@@ -23,7 +23,6 @@ class Server {
 			dataType: 'json',
 			contentType: 'application/json; charset=UTF-8',
 			success: (resp) => {
-				console.log(resp);
 				store.dispatch({
 					type: 'NEW_REP_COUNTS',
 					data: resp

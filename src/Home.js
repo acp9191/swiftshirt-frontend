@@ -47,7 +47,6 @@ function Home(props) {
 		let sessionObj = cookies.get('swiftshirt-user-session') || null;
 
 		if (sessionObj) {
-			console.log(sessionObj);
 			store.dispatch({
 				type: 'NEW_SESSION',
 				data: sessionObj
@@ -102,6 +101,34 @@ function Home(props) {
 			duration += ` ${seconds} s`;
 		}
 
+		if (workout.id === 122 || workout.id === 118) {
+			workout.name = 'Chest Workout';
+		}
+
+		if (workout.id === 121) {
+			workout.name = 'Right Arm Workout';
+		}
+
+		if (workout.id === 120) {
+			workout.name = 'Left Arm Workout';
+		}
+
+		if (workout.id === 119) {
+			workout.name = 'Ab Workout';
+		}
+
+		if (workout.id === 117) {
+			workout.name = 'Back & Bicep Workout';
+		}
+
+		if (workout.id === 116) {
+			workout.name = 'Arm Workout';
+		}
+
+		if (workout.id === 110) {
+			workout.name = 'Full Body Workout';
+		}
+
 		workoutCards.push(
 			<div key={i} className="col-md-4">
 				<Link
@@ -120,7 +147,7 @@ function Home(props) {
 				>
 					<Card className="card mb-4">
 						<CardText>
-							{/* <div>Workout: {workout.id}</div> */}
+							<div>{workout.name || ''}</div>
 							<div>{moment(workout.start, 'X').format('dddd, MMMM Do YYYY')}</div>
 							<div>
 								{moment(workout.start, 'X').format('h:mm a')}-{moment(workout.end, 'X').format('h:mm a')}
